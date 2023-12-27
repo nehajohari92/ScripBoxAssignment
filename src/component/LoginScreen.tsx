@@ -5,9 +5,6 @@ const LoginScreen = ({navigation}) => {
   const [employeeId, setEmployeeId] = useState('');
 
   const handleLogin = () => {
-    // Add your authentication logic here
-    // For example, you can send the employeeId to the server for verification
-    // If authentication is successful, navigate to the home screen
     navigation.navigate('HomeScreen');
   };
 

@@ -16,17 +16,22 @@ const AddChallengeScreen = () => {
 
   const handleAddChallenge = async () => {
     try {
-      // Add the new challenge directly
-      const newChallenge = { title, description };
-
-      // Save the new challenge to AsyncStorage
-      await AsyncStorage.setItem('challenges', JSON.stringify([newChallenge]));
-
-      // Clear input fields
-      setTitle('');
-      setDescription('');
-
-      console.log('Challenge added:', newChallenge);
+       // Fetch existing challenges from AsyncStorage
+       const existingChallengesString = await AsyncStorage.getItem('challenges');
+       const existingChallenges = existingChallengesString ? JSON.parse(existingChallengesString) : [];
+ 
+       // Add the new challenge to the existing ones
+       const newChallenge = { title, description };
+       existingChallenges.push(newChallenge);
+ 
+       // Save the updated challenges back to AsyncStorage
+       await AsyncStorage.setItem('challenges', JSON.stringify(existingChallenges));
+ 
+       // Clear input fields
+       setTitle('');
+       setDescription('');
+ 
+       console.log('Challenge added:', newChallenge);
     } catch (error) {
       console.error('Error adding challenge:', error);
     }
