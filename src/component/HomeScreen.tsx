@@ -1,33 +1,43 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, FlatList, StyleSheet,Button} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
+  const isFocused = useIsFocused();
+
+  // set heading of screen
+  navigation.setOptions({
+    headerTitle: 'Dashboard',
+  });
+
   const handleAddChallenge = () => {
     navigation.navigate('AddChallenge');
   };
 
   const [challenges, setChallenges] = useState([]);
 
-  useEffect(() => {
-    // Fetch challenges from local storage
-    const fetchChallenges = async () => {
-      try {
-        const challengesString = await AsyncStorage.getItem('challenges');
-        if (challengesString) {
-          const storedChallenges = JSON.parse(challengesString);
-          console.log(challengesString);
-          setChallenges(storedChallenges);
-          console.log(storedChallenges);
-          
-        }
-      } catch (error) {
-        console.error('Error fetching challenges:', error);
+  // Fetch challenges from local storage
+  const fetchChallenges = async () => {
+    try {
+      const challengesString = await AsyncStorage.getItem('challenges');
+      if (challengesString) {
+        const storedChallenges = JSON.parse(challengesString);
+        console.log(challengesString);
+        setChallenges(storedChallenges);
+        console.log(storedChallenges);
+        
       }
-    };
+    } catch (error) {
+      console.error('Error fetching challenges:', error);
+    }
+  };
 
-    fetchChallenges();
-  }, []); // Run the effect only once when the component mounts
+  useEffect(() => {
+    if (isFocused) {  
+      fetchChallenges();
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>

@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
-import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, TextInput, Button, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const predefinedTags = [
   {label: 'Feature', value: 'feature'},
@@ -10,11 +11,29 @@ const predefinedTags = [
 ];
 
 const AddChallengeScreen = () => {
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedTag, setSelectedTag] = useState(predefinedTags[0].value);
+  const [selectedTag, setSelectedTag] = useState([]);
 
   const handleAddChallenge = async () => {
+
+    if (title.trim() === '' || description.trim() === '') {
+        Alert.alert(
+            'Required Field',
+            'Please provide all fields before adding a new challenge.',
+            [
+              {
+                text: 'OK',
+                //onPress: () => console.log('OK Pressed'),
+              },
+            ],
+            { cancelable: false }
+          );
+    
+        return;
+      }
+
     try {
        // Fetch existing challenges from AsyncStorage
        const existingChallengesString = await AsyncStorage.getItem('challenges');
@@ -54,7 +73,23 @@ const AddChallengeScreen = () => {
         multiline
       />
       <Text style={styles.label}>Select Tag:</Text>
-
+      <DropDownPicker
+        items={predefinedTags}
+        defaultValue={null}
+        containerStyle={styles.dropdownContainer}
+        style={{ backgroundColor: '#fafafa', zIndex: 1000 }}
+        itemStyle={{ justifyContent: 'flex-start' }}
+        dropDownStyle={{ backgroundColor: '#fafafa' }}
+        onChangeItem={(tags) => setSelectedTag(tags)}
+      />
+      {/* Display selected tags */}
+      <View>
+        {selectedTag.map((tag) => (
+          <View key={tag.value} style={styles.tag}>
+            <Text>{tag.label}</Text>
+          </View>
+        ))}
+      </View>
       <Button title="Add Challenge" onPress={handleAddChallenge} />
     </View>
   );
@@ -83,6 +118,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
+  },
+  dropdownContainer: {
+    height: 40,
+    width: 200,  // Adjust the width as needed
   },
 });
 

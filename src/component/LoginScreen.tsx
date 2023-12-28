@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 
 const LoginScreen = ({navigation}) => {
   const [employeeId, setEmployeeId] = useState('');
 
   const handleLogin = () => {
+
+    if(employeeId.trim() ===''){
+      Alert.alert(
+        'Required Field',
+        'Please provide valid Employee Id for login',
+        [
+          {
+            text: 'OK',
+            //onPress: () => console.log('OK Pressed'),
+          },
+        ],
+        { cancelable: false }
+      );
+
+    return;
+    }
     navigation.navigate('HomeScreen');
   };
 
