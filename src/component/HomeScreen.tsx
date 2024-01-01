@@ -116,8 +116,7 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={(item, index) => `${index}`} // Use index as key for simplicity
         renderItem={renderItem}
       />
-    )}
-    
+    )}   
     <Button title="Add Challenge" onPress={handleAddChallenge} />
 
   </View>
@@ -153,7 +152,10 @@ const styles = StyleSheet.create({
     right: 16,
   },
   sortButtons: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    borderRadius: 4,
+    margin: 8
+    
   },
 
 });
