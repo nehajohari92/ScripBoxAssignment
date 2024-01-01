@@ -17,6 +17,8 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const [challenges, setChallenges] = useState([]);
+  const [sortBy, setSortBy] = useState('votes'); // Default sorting by votes
+
 
   // Fetch challenges from local storage
   const fetchChallenges = async () => {
@@ -78,12 +80,34 @@ const HomeScreen = ({ navigation }) => {
           </View>
     );
   };
+  const handleSort = (criteria : string) => {
+    // Update the sorting criteria and re-render the component
+    setSortBy(criteria);
+    sortChallenges(criteria);
+  };
+
+  const sortChallenges = (criteria : string) => {
+    // Sort challenges based on the selected criteria
+    setChallenges((prevChallenges) =>
+      [...prevChallenges].sort((a, b) => {
+        if (criteria === 'votes') {
+          return (b.votes || 0) - (a.votes || 0);
+        } else if (criteria === 'date') {
+          return parseISO(b.date) - parseISO(a.date);
+        }
+        return 0;
+      })
+    );
+  };
 
   return (
     
     <View style={styles.container}>
     <Text style={styles.title}>Challenges</Text> 
-  
+    <View style={styles.sortButtons}>
+        <Button title="Sort by Votes" onPress={() => handleSort('votes')} />
+        <Button title="Sort by Date" onPress={() => handleSort('date')} />
+      </View>
     {challenges.length === 0 ? (
       <Text>No challenges available.</Text>
     ) : (
@@ -91,19 +115,9 @@ const HomeScreen = ({ navigation }) => {
         data={challenges}
         keyExtractor={(item, index) => `${index}`} // Use index as key for simplicity
         renderItem={renderItem}
-        // renderItem={({ item }) => (
-        //   <View style={styles.challengeItem}>
-        //     <Text style={styles.challengeTitle}>{item.title}</Text>
-        //     <Text>{item.description}</Text>
-        //     <Text>Total Votes- {item.votes}</Text>
-        //     <Text>Date- {item.date}</Text>
-        //     <TouchableOpacity onPress={() => upvoteChallenge(item.id)} style={styles.upvoteButton}>
-        //      <Text>👍 Upvote ({item.votes || 0})</Text>
-        //     </TouchableOpacity>
-        //   </View>
-        // )}
       />
     )}
+    
     <Button title="Add Challenge" onPress={handleAddChallenge} />
 
   </View>
@@ -138,6 +152,10 @@ const styles = StyleSheet.create({
     top: 16,
     right: 16,
   },
+  sortButtons: {
+    flexDirection: 'row'
+  },
+
 });
 
 export default HomeScreen;
