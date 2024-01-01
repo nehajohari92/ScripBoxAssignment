@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = () => {
+  const navigation = useNavigation();
   const [employeeId, setEmployeeId] = useState('');
 
   const handleLogin = () => {
@@ -10,10 +12,8 @@ const LoginScreen = ({navigation}) => {
       Alert.alert(
         'Required Field',
         'Please provide valid Employee Id for login',
-        [
-          {
+        [{
             text: 'OK',
-            //onPress: () => console.log('OK Pressed'),
           },
         ],
         { cancelable: false }

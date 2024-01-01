@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, FlatList, StyleSheet,Button} from 'react-native';
+import {View, Text, FlatList, StyleSheet,Button,TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { format, parseISO } from 'date-fns';
 
 const HomeScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -39,7 +40,47 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [isFocused]);
 
+  const upvoteChallenge = async (challengeId: string) => {
+    // Find the challenge by ID and update the upvote count
+    setChallenges((prevChallenges) =>
+    prevChallenges.map((challenge) =>
+      challenge.id === challengeId
+        ? { ...challenge, votes: (challenge.votes || 0) + 1 } // Increment votes or start from 1 if undefined
+        : challenge
+    )
+  );
+   // Save the updated challenges to local storage
+    saveChallenges();
+  };
+
+  const saveChallenges = async () => {
+    try {
+      // Save challenges to local storage
+      await AsyncStorage.setItem('challenges', JSON.stringify(challenges));
+    } catch (error) {
+      console.error('Error saving challenges:', error);
+    }
+  };
+
+  const renderItem = ({ item }) => {
+    const parsedDate = parseISO(item.date);
+    const formattedDate = format(parsedDate, 'ddMMyy');
+
+    return (
+      <View style={styles.challengeItem}>
+            <Text style={styles.challengeTitle}>{item.title}</Text>
+            <Text>{item.description}</Text>
+            <Text>Total Votes- {item.votes}</Text>
+            <Text>Date- {item.date}</Text>
+            <TouchableOpacity onPress={() => upvoteChallenge(item.id)} style={styles.upvoteButton}>
+             <Text>👍 Upvote ({item.votes || 0})</Text>
+            </TouchableOpacity>
+          </View>
+    );
+  };
+
   return (
+    
     <View style={styles.container}>
     <Text style={styles.title}>Challenges</Text> 
   
@@ -49,12 +90,18 @@ const HomeScreen = ({ navigation }) => {
       <FlatList
         data={challenges}
         keyExtractor={(item, index) => `${index}`} // Use index as key for simplicity
-        renderItem={({ item }) => (
-          <View style={styles.challengeItem}>
-            <Text style={styles.challengeTitle}>{item.title}</Text>
-            <Text>{item.description}</Text>
-          </View>
-        )}
+        renderItem={renderItem}
+        // renderItem={({ item }) => (
+        //   <View style={styles.challengeItem}>
+        //     <Text style={styles.challengeTitle}>{item.title}</Text>
+        //     <Text>{item.description}</Text>
+        //     <Text>Total Votes- {item.votes}</Text>
+        //     <Text>Date- {item.date}</Text>
+        //     <TouchableOpacity onPress={() => upvoteChallenge(item.id)} style={styles.upvoteButton}>
+        //      <Text>👍 Upvote ({item.votes || 0})</Text>
+        //     </TouchableOpacity>
+        //   </View>
+        // )}
       />
     )}
     <Button title="Add Challenge" onPress={handleAddChallenge} />
@@ -85,6 +132,11 @@ const styles = StyleSheet.create({
   },
   challengeTitle: {
     fontWeight: 'bold',
+  },
+  upvoteButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
   },
 });
 

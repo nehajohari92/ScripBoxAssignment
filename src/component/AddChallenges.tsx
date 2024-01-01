@@ -2,6 +2,9 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, TextInput, Button, StyleSheet, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+
 
 const predefinedTags = [
   {label: 'Feature', value: 'feature'},
@@ -35,12 +38,16 @@ const AddChallengeScreen = () => {
       }
 
     try {
+
+        const newChallengeId = uuidv4();
        // Fetch existing challenges from AsyncStorage
        const existingChallengesString = await AsyncStorage.getItem('challenges');
        const existingChallenges = existingChallengesString ? JSON.parse(existingChallengesString) : [];
  
        // Add the new challenge to the existing ones
-       const newChallenge = { title, description };
+       const newChallenge = { id: newChallengeId,title, description, votes: 0,
+        date: new Date().toISOString()};
+
        existingChallenges.push(newChallenge);
  
        // Save the updated challenges back to AsyncStorage
