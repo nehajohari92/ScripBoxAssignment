@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#000000',
     marginBottom: 16,
   },
   input: {
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 8,
     padding: 8,
+    color: '#000000',
     marginBottom: 16,
     width: '100%',
   },
